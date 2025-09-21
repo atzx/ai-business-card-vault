@@ -1,0 +1,7 @@
+{
+  "name": "AI Business Card Vault",
+  "description": "Upload or scan business cards to automatically extract contact information using AI. Store, search, and categorize your contacts in a simple, modern interface.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
