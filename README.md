@@ -16,6 +16,15 @@ kill $(lsof -t -i:3001)
 3. Run the app:
    `npm run dev`
 
+## Mover tu rama actual a un commit
+`git reset --hard <hash_del_commit>`
+
+Esto mueve tu rama al commit indicado.
+
+`--hard`: descarta cambios en el working directory.
+`--soft`: mantiene los cambios en staging.
+`--mixed`: mantiene los cambios en el working directory pero no en staging.
+
 ## Run and deploy your AI Studio app
 
 This contains everything you need to run your app locally.

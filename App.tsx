@@ -5,6 +5,7 @@ import CardList from './components/CardList';
 import SearchBar from './components/SearchBar';
 import EditCardModal from './components/EditCardModal';
 import GeminiApiKeyModal from './components/GeminiApiKeyModal';
+import ConfirmationModal from './components/ConfirmationModal';
 
 const App: React.FC = () => {
   const [cards, setCards] = useState<BusinessCard[]>([]);
@@ -12,6 +13,7 @@ const App: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<BusinessCard | null>(null);
   const [isGeminiModalOpen, setIsGeminiModalOpen] = useState(false);
+  const [isEraseAllModalOpen, setIsEraseAllModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchCards = async () => {
@@ -74,19 +76,18 @@ const App: React.FC = () => {
   };
 
   const handleEraseAllCards = async () => {
-    if (window.confirm('Are you sure you want to delete all cards? This action cannot be undone.')) {
-      try {
-        const response = await fetch('http://localhost:3002/cards', {
-          method: 'DELETE',
-        });
-        if (!response.ok) {
-          throw new Error('Failed to delete all cards.');
-        }
-        setCards([]);
-      } catch (error) {
-        console.error("Failed to delete all cards:", error);
+    try {
+      const response = await fetch('http://localhost:3002/cards', {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete all cards.');
       }
+      setCards([]);
+    } catch (error) {
+      console.error("Failed to delete all cards:", error);
     }
+    setIsEraseAllModalOpen(false);
   };
 
   const handleSaveGeminiApiKey = async (apiKey: string) => {
@@ -138,7 +139,7 @@ const App: React.FC = () => {
             Add New Card
           </button>
           <button
-            onClick={handleEraseAllCards}
+            onClick={() => setIsEraseAllModalOpen(true)}
             className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105"
           >
             Erase all Cards
@@ -166,6 +167,14 @@ const App: React.FC = () => {
           <GeminiApiKeyModal
             onClose={() => setIsGeminiModalOpen(false)}
             onSave={handleSaveGeminiApiKey}
+          />
+        )}
+
+        {isEraseAllModalOpen && (
+          <ConfirmationModal
+            message="Are you sure you want to delete all cards? This action cannot be undone."
+            onConfirm={handleEraseAllCards}
+            onCancel={() => setIsEraseAllModalOpen(false)}
           />
         )}
       </main>
