@@ -233,6 +233,24 @@ app.post('/api/save-gemini-key', (req, res) => {
   });
 });
 
+app.get('/api/get-gemini-key', (req, res) => {
+  const envPath = path.join(__dirname, '.env.local');
+
+  fs.readFile(envPath, 'utf8', (err, data) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        return res.json({ apiKey: '' });
+      }
+      console.error('Error reading .env.local file:', err);
+      return res.status(500).send('Error reading API key.');
+    }
+
+    const match = data.match(/GEMINI_API_KEY=(.*)/);
+    const apiKey = match ? match[1] : '';
+    res.json({ apiKey });
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });

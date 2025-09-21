@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Props {
+  apiKey: string;
   onClose: () => void;
   onSave: (apiKey: string) => void;
 }
 
-const GeminiApiKeyModal: React.FC<Props> = ({ onClose, onSave }) => {
-  const [apiKey, setApiKey] = useState('');
+const GeminiApiKeyModal: React.FC<Props> = ({ apiKey: initialApiKey, onClose, onSave }) => {
+  const [apiKey, setApiKey] = useState(initialApiKey);
+  
+  useEffect(() => {
+    setApiKey(initialApiKey);
+  }, [initialApiKey]);
+
   const [showApiKey, setShowApiKey] = useState(false);
 
   const handleSave = () => {

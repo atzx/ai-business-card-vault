@@ -13,6 +13,7 @@ const App: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<BusinessCard | null>(null);
   const [isGeminiModalOpen, setIsGeminiModalOpen] = useState(false);
+  const [geminiApiKey, setGeminiApiKey] = useState('');
   const [isEraseAllModalOpen, setIsEraseAllModalOpen] = useState(false);
 
   useEffect(() => {
@@ -31,6 +32,19 @@ const App: React.FC = () => {
       }
     };
     fetchCards();
+    const fetchGeminiApiKey = async () => {
+  try {
+    const response = await fetch('http://localhost:3002/api/get-gemini-key');
+    if (!response.ok) {
+      throw new Error('Failed to fetch API key.');
+    }
+    const data = await response.json();
+    setGeminiApiKey(data.apiKey);
+  } catch (error) {
+    console.error("Failed to fetch API key:", error);
+  }
+};
+fetchGeminiApiKey();
   }, []);
 
   const handleOpenAddNew = () => {
@@ -103,6 +117,7 @@ const App: React.FC = () => {
         throw new Error('Failed to save API key.');
       }
       alert('API key saved successfully!');
+      setGeminiApiKey(apiKey);
       setIsGeminiModalOpen(false);
     } catch (error) {
       console.error("Failed to save API key:", error);
@@ -165,6 +180,7 @@ const App: React.FC = () => {
 
         {isGeminiModalOpen && (
           <GeminiApiKeyModal
+            apiKey={geminiApiKey}
             onClose={() => setIsGeminiModalOpen(false)}
             onSave={handleSaveGeminiApiKey}
           />
