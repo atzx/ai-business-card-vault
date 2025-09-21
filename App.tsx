@@ -101,7 +101,7 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-slate-900 text-slate-100 font-sans">
       <main className="container mx-auto px-4 py-8">
         <header className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-300">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-center text-blue-500">
             AI Business Card Vault
           </h1>
           <p className="text-slate-400 mt-2">Your intelligent contact database.</p>
