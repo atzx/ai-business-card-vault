@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { BusinessCard, Category, ExtractedCardData } from '../types';
 import { extractInfoFromImage } from '../services/geminiService';
 import { CATEGORIES } from '../constants';
+import ConfirmationModal from './ConfirmationModal';
 
 interface EditCardModalProps {
   card: BusinessCard | null;
@@ -21,6 +22,7 @@ const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onSave, on
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isNewCardFlow, setIsNewCardFlow] = useState(!card);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     if (card) {
@@ -106,10 +108,17 @@ const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onSave, on
   };
   
   const handleDelete = () => {
-      if(card && window.confirm('Are you sure you want to delete this card?')) {
-          onDelete(card.id);
-      }
-  }
+    if (card) {
+      setIsConfirmModalOpen(true);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (card) {
+      onDelete(card.id);
+    }
+    setIsConfirmModalOpen(false);
+  };
 
   const renderUploader = () => (
     <div>
@@ -173,11 +182,20 @@ const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onSave, on
   );
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4" onClick={onClose}>
-      <div className="bg-slate-800 rounded-xl shadow-2xl p-6 w-full max-w-2xl" onClick={e => e.stopPropagation()}>
-        {isNewCardFlow ? renderUploader() : renderForm()}
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4" onClick={onClose}>
+        <div className="bg-slate-800 rounded-xl shadow-2xl p-6 w-full max-w-2xl" onClick={e => e.stopPropagation()}>
+          {isNewCardFlow ? renderUploader() : renderForm()}
+        </div>
       </div>
-    </div>
+      {isConfirmModalOpen && (
+        <ConfirmationModal
+          message="Are you sure you want to delete this card?"
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setIsConfirmModalOpen(false)}
+        />
+      )}
+    </>
   );
 };
 
