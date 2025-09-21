@@ -8,6 +8,7 @@ const app = express();
 const port = 3002;
 
 app.use(cors());
+app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {
@@ -196,6 +197,39 @@ app.delete('/cards', (req, res) => {
         });
       });
     });
+  });
+});
+
+app.post('/api/save-gemini-key', (req, res) => {
+  const { apiKey } = req.body;
+
+  if (!apiKey) {
+    return res.status(400).send('API key is required.');
+  }
+
+  const envPath = path.join(__dirname, '.env.local');
+  const envLine = `\nGEMINI_API_KEY=${apiKey}`;
+
+  fs.access(envPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      // File does not exist, create it
+      fs.writeFile(envPath, `GEMINI_API_KEY=${apiKey}`, (err) => {
+        if (err) {
+          console.error('Error creating .env.local and saving API key:', err);
+          return res.status(500).send('Error saving API key.');
+        }
+        res.status(200).send('API key saved successfully.');
+      });
+    } else {
+      // File exists, append to it
+      fs.appendFile(envPath, envLine, (err) => {
+        if (err) {
+          console.error('Error saving API key:', err);
+          return res.status(500).send('Error saving API key.');
+        }
+        res.status(200).send('API key saved successfully.');
+      });
+    }
   });
 });
 

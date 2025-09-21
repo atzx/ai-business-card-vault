@@ -4,12 +4,14 @@ import { BusinessCard, Category } from './types';
 import CardList from './components/CardList';
 import SearchBar from './components/SearchBar';
 import EditCardModal from './components/EditCardModal';
+import GeminiApiKeyModal from './components/GeminiApiKeyModal';
 
 const App: React.FC = () => {
   const [cards, setCards] = useState<BusinessCard[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<BusinessCard | null>(null);
+  const [isGeminiModalOpen, setIsGeminiModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchCards = async () => {
@@ -87,6 +89,26 @@ const App: React.FC = () => {
     }
   };
 
+  const handleSaveGeminiApiKey = async (apiKey: string) => {
+    try {
+      const response = await fetch('http://localhost:3002/api/save-gemini-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ apiKey }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to save API key.');
+      }
+      alert('API key saved successfully!');
+      setIsGeminiModalOpen(false);
+    } catch (error) {
+      console.error("Failed to save API key:", error);
+      alert('Failed to save API key.');
+    }
+  };
+
   const filteredCards = useMemo(() => {
     const query = searchQuery.toLowerCase();
     return cards.filter(card =>
@@ -121,6 +143,12 @@ const App: React.FC = () => {
           >
             Erase all Cards
           </button>
+          <button
+            onClick={() => setIsGeminiModalOpen(true)}
+            className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+          >
+            Add Gemini API Key
+          </button>
         </div>
 
         <CardList cards={filteredCards} onEdit={handleOpenEdit} />
@@ -131,6 +159,13 @@ const App: React.FC = () => {
             onClose={handleCloseModal}
             onSave={handleSaveCard}
             onDelete={handleDeleteCard}
+          />
+        )}
+
+        {isGeminiModalOpen && (
+          <GeminiApiKeyModal
+            onClose={() => setIsGeminiModalOpen(false)}
+            onSave={handleSaveGeminiApiKey}
           />
         )}
       </main>
